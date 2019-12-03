@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'" />
+        <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;"> -->
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <link rel="stylesheet" type="text/css" href="css/materialize.min.css">
+        
+        <!--Import Google Icon Font-->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+        <title>To do app</title>
+
+    </head>
+
+    
+
+    <body>
+        <header>
+            <nav class="navwrapper indigo">
+                <div class="container">
+                            <p class="center">To do list</p>
+                   
+                </div>
+            </nav>
+        </header>
+
+           <!-- Division where the new task will be added -->
+           <div class="container" id="newTaskDiv">
+
+            <!-- !Plus Button -->
+                <div class="fixed-action-btn">
+                    <a class="btn-floating btn-large light-blue" id="addBtn">
+                        <i class="large material-icons">add</i>
+                    </a>
+                    <ul>
+                        <li><p>Add Task</p></li>
+                    </ul>
+                 </div>
+
+
+            </div>
+
+            <footer>
+                <div class="container">
+                        <!-- <p>Footer</p> -->
+                </div>
+            </footer>
+
+            <script type="text/javascript" src="cordova.js"></script>
+            <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+            <script type="text/javascript" src="js/materialize.min.js"></script>
+            <script type="text/javascript" src="js/index.js"></script>
+
+    </body>
+</html>

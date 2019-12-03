@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'" />
+        <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;"> -->
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        
+        <!--Import Google Icon Font-->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+        <!-- Compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+        <title>To do app</title>
+    </head>
+
+    
+
+    <body>
+           
+            <header>
+                <nav class="navwrapper indigo">
+                    <div class="container">
+                        <!-- <a href="" class="brand-logo">Site</a> -->
+                        <ul>
+                                <li><a href="./home.html" class="">Home</a></li>
+                                <li><a href="" class="">List</a></li>
+                                <li><a href="" class="">Contacts</a></li>
+                                <li><a href="" class="">Login</a></li>
+                            </ul>
+                    </div>
+                </nav>
+            </header>
+
+           <div class="container">
+                <h3>to do list<h3>
+                <div class="row" style="background: lightgray; line-height: 100px;">
+                        <div class="col s10"><input type="text" id="taskName" /></div>
+                            <div class="col s2">
+                                    <a style="bottom:0px;" id="addbtn" class="btn-floating  blue bottom">
+                                            <i class="material-icons">add</i>
+                                        </a>
+                                       
+                                <!-- <a class="btn" id="addbtn">Add</a> -->
+                            </div>
+                            <a id="addCheckBoxes" class="btn">addCheckBoxes</a>
+
+                        </div>
+                </div>
+           </div>
+
+           <!-- Dividion where the new task will be added -->
+           <div class="container" id="newTaskDiv">
+
+            <!-- !Edit Button -->
+                <div class="fixed-action-btn">
+                    <a class="btn-floating btn-large red">
+                         <i class="large material-icons">mode_edit</i>
+                    </a>
+                        <ul>
+                            <li><a class="btn-floating red"><i class="material-icons">insert_chart</i></a></li>
+                            <li><a class="btn-floating yellow darken-1"><i class="material-icons">format_quote</i></a></li>
+                            <li><a class="btn-floating green"><i class="material-icons">publish</i></a></li>
+                            <li><a class="btn-floating blue"><i class="material-icons">attach_file</i></a></li>
+                        </ul>
+                 </div>
+
+
+           </div>
+
+                <footer>
+                    <div class="container">
+                            <!-- <p>Footer</p> -->
+                    </div>
+                </footer>
+
+            <script type="text/javascript" src="cordova.js"></script>
+            <script type="text/javascript" src="js/materialize.min.js"></script>
+            <script type="text/javascript" src="js/index.js"></script>
+            <!-- Compiled and minified JavaScript -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+            <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    </body>
+</html>
