@@ -1,8 +1,9 @@
+var taskID = 1;
+
 var app = {
     // Application Constructor
     initialize: function() {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
-        
     },
 
     onDeviceReady: function() {
@@ -13,20 +14,6 @@ var app = {
           
         },
 };
-
-// document.addEventListener('DOMContentLoaded', function() {
-//     var elems = document.querySelectorAll('.fixed-action-btn');
-//     var instances = M.FloatingActionButton.init(elems, {
-//       direction: 'left'
-//     });
-//   });
-
-function getDivTarget(){
-    return document.getElementById("taskName").value;
-}
-
-var deleteButtonId = 1;
-var taskID = "row" + deleteButtonId;
 
 function renderHomeView() {
 
@@ -57,7 +44,7 @@ function renderHomeView() {
             
             <div class="row">
                     <div class="input-field col s12">
-                         <input type="text" class="timepicker">
+                         <input type="text" id="timepickerElm"class="timepicker">
                          <label for="textarea1">Input Time</label>
                     </div>
             </div>
@@ -95,20 +82,97 @@ function renderHomeView() {
     }),
     $("#confirmBtn").click(function(){
 
+        //saving the details in a local variable that can be used later
         var textValue = $("#taskNameField").val();
         var textDescriptionValue = $("#textDescriptionField").val();
-        var instance = M.Datepicker.getInstance(datePickerElem);
+        var instanceOfDate = M.Datepicker.getInstance(datePickerElem).date;
+        var instanceOfTime = M.Timepicker.getInstance(timepickerElm).time;
+        var instanceOfTimeAmOrPM = M.Timepicker.getInstance(timepickerElm).amOrPm;
+        var instance = instanceOfTime +" "+ instanceOfTimeAmOrPM;
 
-    });
+        var db = window.localStorage; //adding localStorage to a variable
+
+        //creating a value object 
+        var valuerArray = {
+            textValue: textValue,
+            textDescription:textDescriptionValue,
+            date:instanceOfDate,
+            time:instance
+        }
+        console.log(valuerArray);
+        var convertedValue = JSON.stringify(valuerArray);
+        console.log(valuerArray);
+        db.setItem(taskID,convertedValue);
+
+        taskID += 1; //auto incrementing task ID
+
+        renderTaskCard();
+        // myDB = new DbManager();
+        // console.log(myDB);
+    }); 
     
 }
 
-function deleteTask(){
-    document.getElementById($("")).outerHTML = "";
+function renderTaskCard(){
+    var taskCard = 
+    `  <div class="row">
+            <div class="col s12 m7">
+                <div class="card blue-grey darken-1">
+                    <div class="card-image">
+                        <img src="img/logo.png">
+                        <span class="card-title" id="card-title"></span>
+                    </div>
+
+                    <div class="card-content white-text" id="card-content">
+                        <p>I am a very simple card. I am good at containing small bits of information.
+                        I am convenient because I require little markup to use effectively.</p>
+                    </div>
+
+                    <div class="card-action">
+                        <a href="#" id="card-time">This is a link</a>
+                        <a href="#" id="card-date">This is a link</a>
+                    </div>
+                </div>
+            </div>
+        </div>`
+
+        var db = window.localStorage;
+        var unsortedData = JSON.parse(db.getItem(1));
+
+        console.log(unsortedData);
+
+        var myObj = { one: { title: 'first', id: 1,
+                    customKey : { first: "first",
+                    second: "second" } },
+                    two: { title: 'second', id: 2 },
+                    three: { title: 'this is the third',
+                    id: 3 } };
+
+
+        $(document).ready(function(){
+             $(unsortedData.textValue).appendTo("#card-title");
+        })
+
+  document.getElementById('newTaskDiv').innerHTML = taskCard;
+
 }
 
-function addValue(key,value){
-    window.localStorage.setItem(key,value);
-}
+// class DbManager extends window{
+
+//     constructor(key,value){
+//         var valueaArray= [key,value]
+//         this.newValue = valueaArray;
+//     }
+
+//     getItem(valueaArray){
+//         st.getItem(valueaArray);// Pass a key name to get its value.
+//     }
+//     addItem(valueaArray){
+//         st.setItem(valueaArray);
+//     }// Pass a key name and its value to add or update that key.
+//     removeItem(){
+//         st.removeItem(key);    
+//     }// Pass a key name to remove that key from storage.
+// }
 
 app.initialize();
