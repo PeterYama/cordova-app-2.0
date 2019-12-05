@@ -87,8 +87,6 @@ function renderHomeView() {
         var textDescriptionValue = $("#textDescriptionField").val();
         var instanceOfDate = M.Datepicker.getInstance(datePickerElem).date;
         var instanceOfTime = M.Timepicker.getInstance(timepickerElm).time;
-        var instanceOfTimeAmOrPM = M.Timepicker.getInstance(timepickerElm).amOrPm;
-        var instance = instanceOfTime +" "+ instanceOfTimeAmOrPM;
 
         var db = window.localStorage; //adding localStorage to a variable
 
@@ -97,7 +95,7 @@ function renderHomeView() {
             textValue: textValue,
             textDescription:textDescriptionValue,
             date:instanceOfDate,
-            time:instance
+            time:instanceOfTime
         }
         console.log(valuerArray);
         var convertedValue = JSON.stringify(valuerArray);
@@ -124,13 +122,11 @@ function renderTaskCard(){
                     </div>
 
                     <div class="card-content white-text" id="card-content">
-                        <p>I am a very simple card. I am good at containing small bits of information.
-                        I am convenient because I require little markup to use effectively.</p>
                     </div>
 
                     <div class="card-action">
-                        <a href="#" id="card-time">This is a link</a>
-                        <a href="#" id="card-date">This is a link</a>
+                        <a href="#" id="card-time"></a>
+                        <a href="#" id="card-date"></a>
                     </div>
                 </div>
             </div>
@@ -140,38 +136,28 @@ function renderTaskCard(){
         var unsortedData = JSON.parse(db.getItem(1));
         console.log(unsortedData);
 
-        var myObj = { one: { title: 'first', id: 1,
-                    customKey : { first: "first",
-                    second: "second" } },
-                    two: { title: 'second', id: 2 },
-                    three: { title: 'this is the third',
-                    id: 3 } };
-
-
         $(document).ready(function(){
-             $(unsortedData.textValue).appendTo("#card-title");
+             $("#card-title").append(unsortedData.textValue);
+             $("#card-content").append(unsortedData.textDescription);
+             $("#card-time").append(unsortedData.date);
+             $("#card-date").append(unsortedData.time);
         })
 
   document.getElementById('newTaskDiv').innerHTML = taskCard;
 
 }
 
-// class DbManager extends window{
+class DbManager{
 
-//     constructor(key,value){
-//         var valueaArray= [key,value]
-//         this.newValue = valueaArray;
-//     }
-
-//     getItem(valueaArray){
-//         st.getItem(valueaArray);// Pass a key name to get its value.
-//     }
-//     addItem(valueaArray){
-//         st.setItem(valueaArray);
-//     }// Pass a key name and its value to add or update that key.
-//     removeItem(){
-//         st.removeItem(key);    
-//     }// Pass a key name to remove that key from storage.
-// }
+    getItem(key){
+        window.localStorage.getItem(value);// Pass a key name to get its value.
+    }
+    addItem(key,value){
+        window.localStorage.setItem(value);
+    }// Pass a key name and its value to add or update that key.
+    removeItem(){
+        window.localStorage.removeItem(key);    
+    }// Pass a key name to remove that key from storage.
+}
 
 app.initialize();

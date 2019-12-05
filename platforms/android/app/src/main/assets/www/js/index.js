@@ -1,3 +1,4 @@
+var taskID = 1;
 
 var app = {
     // Application Constructor
@@ -5,97 +6,158 @@ var app = {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
     },
 
-    // deviceready Event Handler
-    //
-    // Bind any cordova events here. Common events are:
-    // 'pause', 'resume', etc.
     onDeviceReady: function() {
-   
-            $("#addbtn").click(function(){
+            $("#addBtn").click(function(){
                 // taskTemplate();
-                addContent();
-            }),
-            $("#addeditButton").click(function(){
-                // taskTemplate();
-                checkBoxTest();
+                renderHomeView();
             })
+          
         },
-        
-
 };
 
-document.addEventListener('DOMContentLoaded', function() {
-    var elems = document.querySelectorAll('.fixed-action-btn');
-    var instances = M.FloatingActionButton.init(elems, {
-      direction: 'left'
-    });
-  });
+function renderHomeView() {
 
- 
+    var html =  
+    ` 
+    <div className="container">
+    <div class="row">
+        <form class="col s12">
+            <div class="row">
+                <div class="input-field col s12">
+                <textarea id="taskNameField" class="materialize-textarea"></textarea>
+                <label for="textarea1">Task Name</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                <textarea id="textDescriptionField" class="materialize-textarea peter"></textarea>
+                <label for="textarea1">Task Description</label>
+                </div>
+            </div>
+            
+            <div class="row">
+                    <div class="input-field col s12">
+                        <input type="text" id="datePickerElem" class="datepicker">
+                        <label for="textarea1">Input Date</label>
+                    </div>
+            </div>
+            
+            <div class="row">
+                    <div class="input-field col s12">
+                         <input type="text" id="timepickerElm"class="timepicker">
+                         <label for="textarea1">Input Time</label>
+                    </div>
+            </div>
 
-const taskProps = {
-    name:'unsorted task',
-    taskStatus:['done','undone'],
-    keywords:['important','no due date','urgent']
-    
-}
-function getDivTarget(){
-    return document.getElementById("taskName").value;
-}
-
-// function generateID(){
-//     return taskID += 1;
-// }
-var deleteButtonId = 1;
-var taskID = "row" + deleteButtonId;
-
-
-function addContent(){
-    const markup = `<div class="row" id="${taskID}" style="background: lightgray; line-height: 80px;">
-    <div class="col s8">${getDivTarget()}</div>
-        <div class="col s2">
-            <a class="btn" id="${deleteButtonId}" onclick="deleteTask()" >delete</a>
-        </div>
-        <div class="col s2">
-        <p>
-            <label>
-                <input id="indeterminate-checkbox" type="checkbox" />
-                    <span>Done</span>
-            </label>
-        </p>
-    
-        </div>
-        </div>
-    </div>`;
-    deleteButtonId += 1;
-    taskID = "row" + deleteButtonId;
-    document.getElementById('newTaskDiv').innerHTML += markup;
-}
-
-function checkBoxTest(){
-    const editButton = ` 
-     <div class="fixed-action-btn">
-            <a class="btn-floating btn-large red">
-                <i class="large material-icons">mode_edit</i>
+            <div className="row">
+                <div class="col s6">
+                     <a class="btn light-blue pulse" style="margin-left:50px"id="cameraBtn">
+                     <i class="large material-icons">camera_alt</i>
+                 </a>
+                </div>
+                 <div class="col s6">
+                    <a class="btn light-blue" id="confirmBtn">confirm
+                    
                     </a>
-                        <ul>
-                            <li><a class="btn-floating red"><i class="material-icons">insert_chart</i></a></li>
-                            <li><a class="btn-floating yellow darken-1"><i class="material-icons">format_quote</i></a></li>
-                            <li><a class="btn-floating green"><i class="material-icons">publish</i></a></li>
-                            <li><a class="btn-floating blue"><i class="material-icons">attach_file</i></a></li>
-                         </ul>
-     </div>`;
+                 </div>     
+            </div>
 
+        </form>
+    </div>
+</div>
+`
+    document.getElementById('newTaskDiv').innerHTML = html;
+
+    // const calendar = document.querySelector('.datepicker');
+    // M.Datepicker.init(calendar);
+
+    $("#cameraBtn").click(function(){
+        console.log("cameraButton Working")
+    }),
+    $(document).ready(function(){
+        $('.timepicker').timepicker();
+    }),
+    $(document).ready(function(){
+        $('.datepicker').datepicker();
+    }),
+    $("#confirmBtn").click(function(){
+
+        //saving the details in a local variable that can be used later
+        var textValue = $("#taskNameField").val();
+        var textDescriptionValue = $("#textDescriptionField").val();
+        var instanceOfDate = M.Datepicker.getInstance(datePickerElem).date;
+        var instanceOfTime = M.Timepicker.getInstance(timepickerElm).time;
+
+        var db = window.localStorage; //adding localStorage to a variable
+
+        //creating a value object 
+        var valuerArray = {
+            textValue: textValue,
+            textDescription:textDescriptionValue,
+            date:instanceOfDate,
+            time:instanceOfTime
+        }
+        console.log(valuerArray);
+        var convertedValue = JSON.stringify(valuerArray);
+        console.log(valuerArray);
+        db.setItem(taskID,convertedValue);
+
+        taskID += 1; //auto incrementing task ID
+
+        renderTaskCard();
+        // myDB = new DbManager();
+        // console.log(myDB);
+    }); 
     
+}
 
-     document.getElementById('newTaskDiv').innerHTML += editButton;
+function renderTaskCard(){
+    var taskCard = 
+    `  <div class="row">
+            <div class="col s12 m7">
+                <div class="card blue-grey darken-1">
+                    <div class="card-image">
+                        <img src="img/logo.png">
+                        <span class="card-title" id="card-title"></span>
+                    </div>
+
+                    <div class="card-content white-text" id="card-content">
+                    </div>
+
+                    <div class="card-action">
+                        <a href="#" id="card-time"></a>
+                        <a href="#" id="card-date"></a>
+                    </div>
+                </div>
+            </div>
+        </div>`
+
+        var db = window.localStorage;
+        var unsortedData = JSON.parse(db.getItem(1));
+        console.log(unsortedData);
+
+        $(document).ready(function(){
+             $("#card-title").append(unsortedData.textValue);
+             $("#card-content").append(unsortedData.textDescription);
+             $("#card-time").append(unsortedData.date);
+             $("#card-date").append(unsortedData.time);
+        })
+
+  document.getElementById('newTaskDiv').innerHTML = taskCard;
 
 }
 
-function deleteTask(){
-   
-    document.getElementById($("")).outerHTML = "";
-   
+class DbManager{
+
+    getItem(key){
+        window.localStorage.getItem(value);// Pass a key name to get its value.
+    }
+    addItem(key,value){
+        window.localStorage.setItem(value);
+    }// Pass a key name and its value to add or update that key.
+    removeItem(){
+        window.localStorage.removeItem(key);    
+    }// Pass a key name to remove that key from storage.
 }
 
 app.initialize();
