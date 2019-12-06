@@ -1,4 +1,10 @@
 var taskID = 1;
+var db = window.localStorage;
+var jsonObj;
+var  taskArray = 
+    'cards':[]
+
+
 
 var app = {
     // Application Constructor
@@ -8,7 +14,6 @@ var app = {
 
     onDeviceReady: function() {
             $("#addBtn").click(function(){
-                // taskTemplate();
                 renderHomeView();
             })
           
@@ -16,11 +21,12 @@ var app = {
 };
 
 function renderHomeView() {
-
+    
+    $('.fixed-action-btn').hide();
     var html =  
     ` 
     <div className="container">
-    <div class="row">
+    <div class="row" style="margin-top: 120px">
         <form class="col s12">
             <div class="row">
                 <div class="input-field col s12">
@@ -28,6 +34,7 @@ function renderHomeView() {
                 <label for="textarea1">Task Name</label>
                 </div>
             </div>
+
             <div class="row">
                 <div class="input-field col s12">
                 <textarea id="textDescriptionField" class="materialize-textarea peter"></textarea>
@@ -49,7 +56,7 @@ function renderHomeView() {
                     </div>
             </div>
 
-            <div className="row">
+            <div className="row" style="margin-top: 100px">
                 <div class="col s6">
                      <a class="btn light-blue pulse" style="margin-left:50px"id="cameraBtn">
                      <i class="large material-icons">camera_alt</i>
@@ -67,7 +74,6 @@ function renderHomeView() {
 </div>
 `
     document.getElementById('newTaskDiv').innerHTML = html;
-
     // const calendar = document.querySelector('.datepicker');
     // M.Datepicker.init(calendar);
 
@@ -88,27 +94,43 @@ function renderHomeView() {
         var instanceOfDate = M.Datepicker.getInstance(datePickerElem).date;
         var instanceOfTime = M.Timepicker.getInstance(timepickerElm).time;
 
-        var db = window.localStorage; //adding localStorage to a variable
-
         //creating a value object 
-        var valuerArray = {
-            textValue: textValue,
-            textDescription:textDescriptionValue,
-            date:instanceOfDate,
-            time:instanceOfTime
-        }
-        console.log(valuerArray);
-        var convertedValue = JSON.stringify(valuerArray);
-        console.log(valuerArray);
-        db.setItem(taskID,convertedValue);
-
+        var task = addToJSON( taskID,textValue,textDescriptionValue,instanceOfDate,instanceOfTime);
+        var newTask = taskArray['cards'].push(task)
+        pushToStorage('cards',newTask);
         taskID += 1; //auto incrementing task ID
-
+        console.log("taskID =  "+ taskID)
+        debugger;
         renderTaskCard();
-        // myDB = new DbManager();
-        // console.log(myDB);
     }); 
     
+}
+
+function addToJSON( taskID,textValue,textDescriptionValue,instanceOfDate,instanceOfTime){
+    
+    newTask = {
+        taskID: taskID,
+        textValue: textValue,
+        textDescription:textDescriptionValue,
+        date:instanceOfDate,
+        time:instanceOfTime
+    }
+
+    return newTask;
+}
+
+function pushToStorage(key,value){
+    var convertedValue = JSON.stringify(value);
+    db.setItem(key,convertedValue);
+}
+
+function getItemFromStorage(key){
+    var unsortedItem = db.getItem(key);
+    return JSON.parse(unsortedItem);
+}
+
+function delteItemFromStorage(key){
+    db.removeItem(key);
 }
 
 function renderTaskCard(){
@@ -116,12 +138,9 @@ function renderTaskCard(){
     `  <div class="row">
             <div class="col s12 m7">
                 <div class="card blue-grey darken-1">
-                    <div class="card-image">
-                        <img src="img/logo.png">
-                        <span class="card-title" id="card-title"></span>
-                    </div>
-
-                    <div class="card-content white-text" id="card-content">
+                    <div class="card-content white-text" >
+                    <span class="card-title" id="card-title"></span>
+                    <p id="card-content"></p>
                     </div>
 
                     <div class="card-action">
@@ -132,28 +151,26 @@ function renderTaskCard(){
             </div>
         </div>`
 
-        var db = window.localStorage;
-        var unsortedData = JSON.parse(db.getItem(1));
-        console.log(unsortedData);
+        var temp = getItemFromStorage('cards');
+        temp.forEach(element => {
+            $(document).ready(function(){
+                $("#card-title").append(element.textValue);
+                $("#card-content").append(element.textDescription);
+                $("#card-time").append(element.date.slice(0,10));
+                $("#card-date").append(element.time);
+           })
+        });
 
-        $(document).ready(function(){
-             $("#card-title").append(unsortedData.textValue);
-             $("#card-content").append(unsortedData.textDescription);
-             $("#card-time").append(unsortedData.date);
-             $("#card-date").append(unsortedData.time);
-        })
-
-  document.getElementById('newTaskDiv').innerHTML = taskCard;
-
+        $('.fixed-action-btn').show();
 }
 
 class DbManager{
 
     getItem(key){
-        window.localStorage.getItem(value);// Pass a key name to get its value.
+        window.localStorage.getItem(key);// Pass a key name to get its value.
     }
     addItem(key,value){
-        window.localStorage.setItem(value);
+        window.localStorage.setItem(key,value);
     }// Pass a key name and its value to add or update that key.
     removeItem(){
         window.localStorage.removeItem(key);    
