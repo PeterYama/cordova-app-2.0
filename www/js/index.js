@@ -13,6 +13,7 @@ var app = {
 
     onDeviceReady: function() {
             $("#addBtn").click(function(){
+                $('.fixed-action-btn').hide();
                 renderHomeView();
             })          
         },
@@ -20,7 +21,6 @@ var app = {
 
 function renderHomeView() {
     
-    $('.fixed-action-btn').hide();
     var html =  
     ` 
     <div className="container">
@@ -72,8 +72,6 @@ function renderHomeView() {
 </div>
 `
     document.getElementById('newTaskDiv').innerHTML = html;
-    // const calendar = document.querySelector('.datepicker');
-    // M.Datepicker.init(calendar);
 
     $("#cameraBtn").click(function(){
         console.log("cameraButton Working")
@@ -85,6 +83,7 @@ function renderHomeView() {
         $('.datepicker').datepicker();
     }),
     $("#confirmBtn").click(function(){
+
 
         //saving the details in a local variable that can be used later
         var textValue = $("#taskNameField").val();
@@ -99,6 +98,11 @@ function renderHomeView() {
         pushToStorage('cards',cardsArray['cards']);
         taskID += 1; //auto incrementing task ID
         console.log("taskID =  "+ taskID)
+
+        $('#newTaskDiv').empty();
+        $('.fixed-action-btn').show();
+        
+
         popupateCards();
 
     }); 
