@@ -1,8 +1,7 @@
 var taskID = 1;
 var db = window.localStorage;
-var jsonObj;
-var  taskArray = 
-    'cards':[]
+var  cardsArray = {cards:[]}
+
 
 
 
@@ -96,11 +95,11 @@ function renderHomeView() {
 
         //creating a value object 
         var task = addToJSON( taskID,textValue,textDescriptionValue,instanceOfDate,instanceOfTime);
-        var newTask = taskArray['cards'].push(task)
-        pushToStorage('cards',newTask);
+        cardsArray['cards'].push(task);
+        console.log("cardsArray = "+ cardsArray)
+        pushToStorage('cards',cardsArray['cards']);
         taskID += 1; //auto incrementing task ID
         console.log("taskID =  "+ taskID)
-        debugger;
         renderTaskCard();
     }); 
     
@@ -152,17 +151,25 @@ function renderTaskCard(){
         </div>`
 
         var temp = getItemFromStorage('cards');
-        temp.forEach(element => {
-            $(document).ready(function(){
-                $("#card-title").append(element.textValue);
-                $("#card-content").append(element.textDescription);
-                $("#card-time").append(element.date.slice(0,10));
-                $("#card-date").append(element.time);
-           })
-        });
+
+        for(var x = 0; x  > temp.length; x++){console.log(temp[x])}
+
+        temp.forEach(element =>console.log("elements: "+element)        
+        );
 
         $('.fixed-action-btn').show();
+
+        document.getElementById('newTaskDiv').innerHTML = taskCard;
+
 }
+
+// $(document).ready(function(){
+//     $("#card-title").append(element.textValue);
+//     $("#card-content").append(element.textDescription);
+//     $("#card-time").append(element.date.slice(0,10));
+//     $("#card-date").append(element.time);
+//     document.getElementById('newTaskDiv').innerHTML += taskCard;
+// })
 
 class DbManager{
 
