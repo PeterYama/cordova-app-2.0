@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'" />
+        <meta http-equiv="Content-Security-Policy" content="img-src * data: *; default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval' http://192.168.1.104:8000/cordova app 2.0" />
         <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;"> -->
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
@@ -27,6 +27,17 @@
 
         <!-- Division where the new task will be added -->
         <div class="container" id="newTaskDiv"> </div>
+
+        <!-- division where the map will be shown -->
+        <div class="container">
+            <div class="row">
+                <div class="col s12" id="map_row">
+                    <div id="map_canvas" style="margin-left: 20px; height: 300px; width: 300px;"></div>
+            </div>
+        </div>
+                
+        </div>
+
         <!-- !Add Button -->
         <div class="fixed-action-btn">
             <a class="btn-floating btn-large light-blue" id="addBtn">
@@ -37,17 +48,17 @@
             </ul>
         </div>
 
+        <!-- <p>Footer</p> -->
         <footer>
             <div class="container">
-                    <!-- <p>Footer</p> -->
             </div>
         </footer>
 
         <script type="text/javascript" src="cordova.js"></script>
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBFzjDAUkvSGHBYFROOoK_35QoewLowITw&callback=initMap" type="text/javascript"></script>
         <script type="text/javascript" src="js/materialize.min.js"></script>
         <script type="text/javascript" src="css/materialize.min.css"></script>
         <script type="text/javascript" src="js/index.js"></script>
-
     </body>
 </html>

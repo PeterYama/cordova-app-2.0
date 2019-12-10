@@ -5,6 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         
+    {
+        "name": "Serve to the browser (ionic serve)",
+        "type": "cordova",
+        "request": "launch",
+        "platform": "serve",
+        "devServerAddress": "localhost",
+        "sourceMaps": true,
+        "ionicLiveReload": true,
+        "cwd": "${workspaceFolder}"
+    },
+        
         {
             "type": "chrome",
             "request": "attach",

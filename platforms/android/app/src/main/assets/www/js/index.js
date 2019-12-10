@@ -1,7 +1,11 @@
 var taskID = 1;
 var db = window.localStorage;
-var  cardsArray = {cards:[]}
-
+var cardsArray = {cards:[]}
+var numbeOfCards = 1;
+var task;
+var map;
+var mapDiv = document.getElementById("map_canvas");
+var button = document.getElementById("button");
 
 
 
@@ -9,19 +13,26 @@ var app = {
     // Application Constructor
     initialize: function() {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+        popupateCards();
     },
 
     onDeviceReady: function() {
+
+        initMap();
             $("#addBtn").click(function(){
-                renderHomeView();
-            })
-          
+
+                $('.fixed-action-btn').hide();//hide the Plus button when it is clicked
+
+                renderHomeView();//render the form where the user will add the task details
+
+                $('#map_canvas').empty(); 
+
+            })          
         },
 };
 
 function renderHomeView() {
     
-    $('.fixed-action-btn').hide();
     var html =  
     ` 
     <div className="container">
@@ -36,8 +47,15 @@ function renderHomeView() {
 
             <div class="row">
                 <div class="input-field col s12">
-                <textarea id="textDescriptionField" class="materialize-textarea peter"></textarea>
+                <textarea id="textDescriptionField" class="materialize-textarea "></textarea>
                 <label for="textarea1">Task Description</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="input-field col s12">
+                <textarea id="location-field" class="materialize-textarea "></textarea>
+                <label for="textarea1">Location</label>
                 </div>
             </div>
             
@@ -50,7 +68,7 @@ function renderHomeView() {
             
             <div class="row">
                     <div class="input-field col s12">
-                         <input type="text" id="timepickerElm"class="timepicker">
+                         <input type="text" id="timepickerElm" class="timepicker">
                          <label for="textarea1">Input Time</label>
                     </div>
             </div>
@@ -73,8 +91,6 @@ function renderHomeView() {
 </div>
 `
     document.getElementById('newTaskDiv').innerHTML = html;
-    // const calendar = document.querySelector('.datepicker');
-    // M.Datepicker.init(calendar);
 
     $("#cameraBtn").click(function(){
         console.log("cameraButton Working")
@@ -87,32 +103,44 @@ function renderHomeView() {
     }),
     $("#confirmBtn").click(function(){
 
+
         //saving the details in a local variable that can be used later
         var textValue = $("#taskNameField").val();
         var textDescriptionValue = $("#textDescriptionField").val();
+        var locationFieldValue = $("#location-field").val();
         var instanceOfDate = M.Datepicker.getInstance(datePickerElem).date;
         var instanceOfTime = M.Timepicker.getInstance(timepickerElm).time;
 
+        // alert('Location Field = '+ locationFieldValue)
         //creating a value object 
-        var task = addToJSON( taskID,textValue,textDescriptionValue,instanceOfDate,instanceOfTime);
-        cardsArray['cards'].push(task);
-        console.log("cardsArray = "+ cardsArray)
-        pushToStorage('cards',cardsArray['cards']);
+        task = addToJSON( taskID,textValue,textDescriptionValue,instanceOfDate,instanceOfTime,locationFieldValue);
+
+        cardsArray['cards'].push(task);//pushing the new obj to an array
+       
+        pushToStorage('cards',cardsArray['cards']); //adding to the local storage
+
         taskID += 1; //auto incrementing task ID
-        console.log("taskID =  "+ taskID)
-        renderTaskCard();
+
+        $('#newTaskDiv').empty();//clear the page before displaying the new card
+        
+        $('.fixed-action-btn').show();
+        // getLocation();
+        //display and populate the cards
+        popupateCards();
+
     }); 
     
 }
 
-function addToJSON( taskID,textValue,textDescriptionValue,instanceOfDate,instanceOfTime){
+function addToJSON( taskID,textValue,textDescriptionValue,instanceOfDate,instanceOfTime,locationFieldValue){
     
     newTask = {
         taskID: taskID,
         textValue: textValue,
         textDescription:textDescriptionValue,
         date:instanceOfDate,
-        time:instanceOfTime
+        time:instanceOfTime,
+        location:locationFieldValue
     }
 
     return newTask;
@@ -133,55 +161,143 @@ function delteItemFromStorage(key){
 }
 
 function renderTaskCard(){
+
     var taskCard = 
-    `  <div class="row">
-            <div class="col s12 m7">
+
+    `   <div class="row" style="margin-top: 30px"id="card-id">
+            <div class="col s12">                            
                 <div class="card blue-grey darken-1">
                     <div class="card-content white-text" >
                     <span class="card-title" id="card-title"></span>
                     <p id="card-content"></p>
+                    <a class="waves-effect right waves-light btn" id="deleteButton" onClick="deleteCard(this.id)">Done</a>
                     </div>
-
                     <div class="card-action">
-                        <a href="#" id="card-time"></a>
-                        <a href="#" id="card-date"></a>
+                        <a id="card-time">Date: </a>
+                        <a id="card-date">Time: </a>
+                        <a id="card-location" onClick="getLocation(this.id)">at: </a>
                     </div>
                 </div>
             </div>
+            </div>
         </div>`
 
-        var temp = getItemFromStorage('cards');
-
-        for(var x = 0; x  > temp.length; x++){console.log(temp[x])}
-
-        temp.forEach(element =>console.log("elements: "+element)        
-        );
-
-        $('.fixed-action-btn').show();
-
-        document.getElementById('newTaskDiv').innerHTML = taskCard;
-
+        document.getElementById('newTaskDiv').innerHTML += taskCard;
 }
 
-// $(document).ready(function(){
-//     $("#card-title").append(element.textValue);
-//     $("#card-content").append(element.textDescription);
-//     $("#card-time").append(element.date.slice(0,10));
-//     $("#card-date").append(element.time);
-//     document.getElementById('newTaskDiv').innerHTML += taskCard;
-// })
+function popupateCards(){
 
-class DbManager{
+    var temp = getItemFromStorage('cards');
 
-    getItem(key){
-        window.localStorage.getItem(key);// Pass a key name to get its value.
+    temp.forEach(element =>{
+
+            renderTaskCard();
+
+            $("#card-id").attr('id',element.taskID);
+
+            //adding the auto incrementing ID to each section of the row
+            //doing that way it knows what card to be populated
+            $('#deleteButton').attr('id', "deleteButton"+"-"+element.taskID);
+            $("#card-title").attr('id',"card-title"+"-"+ element.taskID);
+            $("#card-content").attr('id',"card-content"+"-"+element.taskID);
+            $("#card-time").attr('id',"card-time"+ "-" + element.taskID);
+            $("#card-date").attr('id',"card-date"+ "-"+ element.taskID);
+            $("#card-location").attr('id',"card-location"+"-"+ element.taskID);
+
+            $("#card-title"+"-"+element.taskID).append(element.textValue);
+            $("#card-content"+"-"+element.taskID).append(element.textDescription);
+            $("#card-time"+"-"+element.taskID).append(element.date.slice(0,10));
+            $("#card-date"+"-"+element.taskID).append(element.time);
+            $("#card-location"+"-"+element.taskID).append(element.location);
+
+    });
+
+    $('.fixed-action-btn').show();
+}
+
+// delete card will get the id from the button the user has clicked
+function deleteCard(id){
+
+    $("#map_canvas").empty();
+    var rowID = id.substring(13);
+    $("#"+ rowID).remove();
+    console.log("this.taskID = "+ this.taskID)
+    console.log("rowID = "+ rowID)
+    
+    $(mapDiv).empty();
+
+    var temp = getItemFromStorage('cards')
+    // temp.[this.taskID-1] 
+
+    temp.splice(rowID-1);
+    pushToStorage('cards',temp);
+}
+
+function getLocation(id){
+
+    // declaring the call back function when the map is loaded
+    var onSuccess = function(position) {
+
+        //getting the individual location from the local storage
+
+        // initializing the map passing the location str
+        initMap($('#' + id ).text())
+
+    };
+
+    // declaring an error function
+    var err = function(err) {
+        console.log("couldn't load map")
     }
-    addItem(key,value){
-        window.localStorage.setItem(key,value);
-    }// Pass a key name and its value to add or update that key.
-    removeItem(){
-        window.localStorage.removeItem(key);    
-    }// Pass a key name to remove that key from storage.
+
+    navigator.geolocation.getCurrentPosition(onSuccess,err);
+}
+
+// render map will acc the lot and long that will be displayed on the map
+
+function renderMap(LAT,LNG){
+    
+    // declaring the google map obl and geting the division where it should be loaded
+    map = plugin.google.maps.Map.getMap(mapDiv);
+
+    // creating a map obj that will be passed to map 
+    mapObj = {
+        target: {lat: LAT, lng: LNG},
+        zoom: 17,
+        tilt: 60,
+        bearing: 140,
+        duration: 5000
+    }
+    
+    // addint a marker to the map
+    var marker = map.addMarker({
+        position: {lat: LAT, lng: LNG},
+        title: "Your Task Location",
+        animation: plugin.google.maps.Animation.BOUNCE
+      });
+
+    //passig the map obg to initialize the map
+    map.animateCamera(mapObj);
+    marker.showInfoWindow();
+
+}
+function initMap(adr){
+    
+    // this method will get the address string and get the coordinates
+    // initializing geocoder obj
+    var geocoder = new google.maps.Geocoder();
+
+    geocoder.geocode( { 'address': adr}, function(results, status) {
+
+        if (status == google.maps.GeocoderStatus.OK) {
+            var latitude = results[0].geometry.location.lat();
+            var longitude = results[0].geometry.location.lng();
+
+            // rendering the map passing the latitude and loingitude acquired from this function
+            renderMap(latitude,longitude);
+
+            } 
+        }); 
 }
 
 app.initialize();
