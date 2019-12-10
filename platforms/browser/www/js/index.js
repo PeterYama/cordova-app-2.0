@@ -1,8 +1,6 @@
 var taskID = 1;
 var db = window.localStorage;
-var cardsArray = {cards:[]}
 var numbeOfCards = 1;
-var task;
 var map;
 var mapDiv = document.getElementById("map_canvas");
 var button = document.getElementById("button");
@@ -17,8 +15,10 @@ var app = {
     },
 
     onDeviceReady: function() {
+        
+        initializeDB();
 
-        initMap();
+            
             $("#addBtn").click(function(){
 
                 $('.fixed-action-btn').hide();//hide the Plus button when it is clicked
@@ -31,8 +31,18 @@ var app = {
         },
 };
 
+function initializeDB(){
+
+    var cardsArray = {cards:[]}
+    if(getItemFromStorage('cards')==null){
+        pushToStorage('cards',cardsArray);
+        alert("DB created")
+    }
+};
 function renderHomeView() {
-    
+
+    clearMap();
+
     var html =  
     ` 
     <div className="container">
@@ -110,14 +120,19 @@ function renderHomeView() {
         var locationFieldValue = $("#location-field").val();
         var instanceOfDate = M.Datepicker.getInstance(datePickerElem).date;
         var instanceOfTime = M.Timepicker.getInstance(timepickerElm).time;
-
-        // alert('Location Field = '+ locationFieldValue)
+        
         //creating a value object 
-        task = addToJSON( taskID,textValue,textDescriptionValue,instanceOfDate,instanceOfTime,locationFieldValue);
+        var task = addToJSON( taskID,textValue,textDescriptionValue,instanceOfDate,instanceOfTime,locationFieldValue);
 
-        cardsArray['cards'].push(task);//pushing the new obj to an array
-       
-        pushToStorage('cards',cardsArray['cards']); //adding to the local storage
+        var temp = getItemFromStorage('cards');
+
+        temp['cards'].push(task);
+
+        pushToStorage('cards',temp);
+
+        // cardsArray['cards'].push(task);//pushing the new obj to an array
+
+        // pushToStorage('cards',cardsArray['cards']); //adding to the local storage
 
         taskID += 1; //auto incrementing task ID
 
@@ -168,9 +183,18 @@ function renderTaskCard(){
             <div class="col s12">                            
                 <div class="card blue-grey darken-1">
                     <div class="card-content white-text" >
+                    <p class="right">
+                        <label>
+                        <input type="checkbox" id="check-box" onClick="showButton(this.checked,this.id)"/>
+                        <span>mark</span>
+                        </label>
+                    </p>
                     <span class="card-title" id="card-title"></span>
+                   
                     <p id="card-content"></p>
-                    <a class="waves-effect right waves-light btn" id="deleteButton" onClick="deleteCard(this.id)">Done</a>
+                    
+                    <a class="waves-effect right waves-light btn hide" id="deleteButton"
+                     onClick="deleteCard(this.id)">Done</a>
                     </div>
                     <div class="card-action">
                         <a id="card-time">Date: </a>
@@ -185,15 +209,25 @@ function renderTaskCard(){
         document.getElementById('newTaskDiv').innerHTML += taskCard;
 }
 
+function showButton(obj,id){
+
+    if (obj === true){
+        var temp =  id.substring(10)
+        $("#deleteButton"+"-"+temp).removeClass("waves-effect right waves-light btn hide").addClass("waves-effect right waves-light btn show");
+    }
+
+}
+
 function popupateCards(){
 
     var temp = getItemFromStorage('cards');
 
-    temp.forEach(element =>{
+    temp['cards'].forEach(element =>{
 
             renderTaskCard();
 
             $("#card-id").attr('id',element.taskID);
+            $("#check-box").attr('id',"check-box-"+element.taskID);
 
             //adding the auto incrementing ID to each section of the row
             //doing that way it knows what card to be populated
@@ -215,23 +249,31 @@ function popupateCards(){
     $('.fixed-action-btn').show();
 }
 
+function clearMap(){
+    $('#map_canvas').attr('__pluginmapid',"");
+    $('#map_canvas').attr('__plugindomid',"");
+    $('#map_canvas').attr('class',"");
+    $("#map_canvas").empty();
+}
+
+
 // delete card will get the id from the button the user has clicked
 function deleteCard(id){
 
-    debugger;
-    $("#map_canvas").empty();
+    clearMap();
+
     var rowID = id.substring(13);
-    $("#"+ rowID).remove();
-    console.log("this.taskID = "+ this.taskID)
+    $("#"+ rowID).empty();
     console.log("rowID = "+ rowID)
+    console.log("temp OBJ = "+ temp)
     
-    $(mapDiv).empty();
-
     var temp = getItemFromStorage('cards')
-    // temp.[this.taskID-1] 
-
-    temp.splice(rowID-1);
+    var index = parseInt(temp['cards'].findIndex(x => x.taskID == rowID))
+    temp['cards'].splice(index);
     pushToStorage('cards',temp);
+
+    //take it from the local variable
+    // cardsArray['cards'].splice(rowID-1);
 }
 
 function getLocation(id){
@@ -243,7 +285,6 @@ function getLocation(id){
 
         // initializing the map passing the location str
         initMap($('#' + id ).text())
-
     };
 
     // declaring an error function
@@ -282,15 +323,15 @@ function renderMap(LAT,LNG){
     marker.showInfoWindow();
 
 }
+
 function initMap(adr){
     
-    // this method will get the address string and get the coordinates
-    // initializing geocoder obj
     var geocoder = new google.maps.Geocoder();
 
     geocoder.geocode( { 'address': adr}, function(results, status) {
 
         if (status == google.maps.GeocoderStatus.OK) {
+
             var latitude = results[0].geometry.location.lat();
             var longitude = results[0].geometry.location.lng();
 
